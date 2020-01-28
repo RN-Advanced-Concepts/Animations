@@ -117,11 +117,11 @@ class Deck extends Component {
 				);
 			}
 			// else just make a card.
-			return <View key={item.id} style={styles.cardStyle}>{this.props.renderCard(item)}</View>;
+			return <Animated.View key={item.id} style={styles.cardStyle}>{this.props.renderCard(item)}</Animated.View>;
 		}).reverse();
 	}
 	render() {
-		return <View>{this.renderCards()}</View>;
+		return <Animated.View>{this.renderCards()}</Animated.View>;
 	}
 }
 
