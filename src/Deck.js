@@ -92,6 +92,10 @@ class Deck extends Component {
 	}
 
 	renderCards() {
+		if (this.state.index >= this.props.data.length) {
+			return this.props.renderNoMoreCards();
+		}
+
 		return this.props.data.map((item, i) => {
 			// If these cards had already been swiped return null.
 			if (i < this.state.index) { return null; }
