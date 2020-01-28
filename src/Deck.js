@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Dimensions, Animated, PanResponder } from 'react-native';
+import { View, Dimensions, Animated, PanResponder, LayoutAnimation, UIManager } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
@@ -46,6 +46,11 @@ class Deck extends Component {
 		this.state = { panResponder, position, index: 0 };
 	}
 
+	UNSAFE_componentWillUpdate() {
+		UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+	LayoutAnimation.spring();
+	}
+ 
 	forceSwipe(direction) {
 		const x = direction === 'right' ? SCREEN_WIDTH + 100 : -SCREEN_WIDTH - 100;
 		// timing is more simple than spring.
@@ -96,37 +101,42 @@ class Deck extends Component {
 			return this.props.renderNoMoreCards();
 		}
 
-		return this.props.data.map((item, i) => {
-			// If these cards had already been swiped return null.
-			if (i < this.state.index) {
-				return null;
-			}
+		return this.props.data
+			.map((item, i) => {
+				// If these cards had already been swiped return null.
+				if (i < this.state.index) {
+					return null;
+				}
 
-			// Make a card and attach panHandlers
-			if (i === this.state.index) {
+				// Make a card and attach panHandlers
+				if (i === this.state.index) {
+					return (
+						// {...this.state.panResponder.panHandlers} connects PanResponder to the View
+						// style={this.props.position.getLayout()} // No spread operator needed!!!
+						<Animated.View
+							key={item.id}
+							style={[ this.getCardStyle(), styles.cardStyle ]}
+							{...this.state.panResponder.panHandlers}
+						>
+							{this.props.renderCard(item)}
+						</Animated.View>
+					);
+				}
+				// else just make a card.
 				return (
-					// {...this.state.panResponder.panHandlers} connects PanResponder to the View
-					// style={this.props.position.getLayout()} // No spread operator needed!!!
 					<Animated.View
 						key={item.id}
-						style={[ this.getCardStyle(), styles.cardStyle ]}
-						{...this.state.panResponder.panHandlers}
+						// i - this.state.index == move it down by 10 * the number of pixels
+						// that the Card is away from becoming the top Card.
+						// maybe add the next line too.
+						// , left: 10 * (i - this.state.index)
+						style={[ styles.cardStyle, { top: 10 * (i - this.state.index) } ]}
 					>
 						{this.props.renderCard(item)}
 					</Animated.View>
 				);
-			}
-			// else just make a card.
-			return <Animated.View 
-			key={item.id} 
-			// i - this.state.index == move it down by 10 * the number of pixels
-			// that the Card is away from becoming the top Card.
-			// maybe add the next line too.
-			// , left: 10 * (i - this.state.index)
-			style={[styles.cardStyle, { top: 10 * (i - this.state.index) }]}
-
-			>{this.props.renderCard(item)}</Animated.View>;
-		}).reverse();
+			})
+			.reverse();
 	}
 	render() {
 		return <Animated.View>{this.renderCards()}</Animated.View>;
