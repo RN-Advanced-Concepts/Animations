@@ -46,6 +46,8 @@ class Deck extends Component {
 		this.state = { panResponder, position, index: 0 };
 	}
 
+	// when cards in DATA are finished and we want to get more cards 
+	// from somewhere else, we need to reset the index.
 	UNSAFE_componentWillReceiveProps(nextProps) {
 		if (nextProps.data !== this.props.data) {
 			this.setState({ index: 0 });
