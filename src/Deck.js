@@ -60,8 +60,8 @@ class Deck extends Component {
 		const { onSwipeLeft, onSwipeRight, data } = this.props;
 		const item = data[this.state.index];
 
-        direction = 'right' ? onSwipeRight(item) : onSwipeLeft(item);
-        this.state.position.setValue({x: 0, y: 0});
+		direction = 'right' ? onSwipeRight(item) : onSwipeLeft(item);
+		this.state.position.setValue({ x: 0, y: 0 });
 		this.setState({ index: this.state.index + 1 });
 	}
 
@@ -98,25 +98,40 @@ class Deck extends Component {
 
 		return this.props.data.map((item, i) => {
 			// If these cards had already been swiped return null.
-			if (i < this.state.index) { return null; }
+			if (i < this.state.index) {
+				return null;
+			}
 
 			// Make a card and attach panHandlers
 			if (i === this.state.index) {
 				return (
 					// {...this.state.panResponder.panHandlers} connects PanResponder to the View
 					// style={this.props.position.getLayout()} // No spread operator needed!!!
-					<Animated.View key={item.id} style={this.getCardStyle()} {...this.state.panResponder.panHandlers}>
+					<Animated.View
+						key={item.id}
+						style={[ this.getCardStyle(), styles.cardStyle ]}
+						{...this.state.panResponder.panHandlers}
+					>
 						{this.props.renderCard(item)}
 					</Animated.View>
 				);
 			}
 			// else just make a card.
-			return this.props.renderCard(item);
-		});
+			return <View key={item.id} style={styles.cardStyle}>{this.props.renderCard(item)}</View>;
+		}).reverse();
 	}
 	render() {
 		return <View>{this.renderCards()}</View>;
 	}
 }
+
+const styles = {
+	cardStyle: {
+		position: 'absolute',
+		width: SCREEN_WIDTH
+		// left: 0,
+		// right: 0,
+	}
+};
 
 export default Deck;
