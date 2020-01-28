@@ -117,7 +117,15 @@ class Deck extends Component {
 				);
 			}
 			// else just make a card.
-			return <Animated.View key={item.id} style={styles.cardStyle}>{this.props.renderCard(item)}</Animated.View>;
+			return <Animated.View 
+			key={item.id} 
+			// i - this.state.index == move it down by 10 * the number of pixels
+			// that the Card is away from becoming the top Card.
+			// maybe add the next line too.
+			// , left: 10 * (i - this.state.index)
+			style={[styles.cardStyle, { top: 10 * (i - this.state.index) }]}
+
+			>{this.props.renderCard(item)}</Animated.View>;
 		}).reverse();
 	}
 	render() {
