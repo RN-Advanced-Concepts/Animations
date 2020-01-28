@@ -46,11 +46,17 @@ class Deck extends Component {
 		this.state = { panResponder, position, index: 0 };
 	}
 
+	UNSAFE_componentWillReceiveProps(nextProps) {
+		if (nextProps.data !== this.props.data) {
+			this.setState({ index: 0 });
+		}
+	}
+
 	UNSAFE_componentWillUpdate() {
 		UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
-	LayoutAnimation.spring();
+		LayoutAnimation.spring();
 	}
- 
+
 	forceSwipe(direction) {
 		const x = direction === 'right' ? SCREEN_WIDTH + 100 : -SCREEN_WIDTH - 100;
 		// timing is more simple than spring.
